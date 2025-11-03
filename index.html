@@ -7,15 +7,21 @@
   body {
     font-family: sans-serif;
     text-align: center;
-    margin-top: 50px;
+    margin-top: 40px;
   }
   .meter {
     margin: 20px;
   }
   button {
-    margin: 5px;
-    padding: 5px 10px;
+    margin: 3px;
+    padding: 6px 12px;
     font-size: 16px;
+  }
+  input[type="number"] {
+    width: 80px;
+    text-align: center;
+    font-size: 16px;
+    margin-left: 10px;
   }
   #total {
     font-size: 20px;
@@ -25,37 +31,84 @@
 </head>
 <body>
 
-<h2>3人麻雀チップカウンタ</h2>
+<h2>3つのメーター合計チェック</h2>
 
+<!-- メーター1 -->
 <div class="meter" id="meter1">
   <h3>東: <span class="value">0</span></h3>
-  <button onclick="changeValue(1, -1)">−</button>
-  <button onclick="changeValue(1, 1)">＋</button>
+  <button onclick="changeValue(1, -10)">−10</button>
+  <button onclick="changeValue(1, -5)">−5</button>
+  <button onclick="changeValue(1, -1)">−1</button>
+  <button onclick="changeValue(1, 1)">＋1</button>
+  <button onclick="changeValue(1, 5)">＋5</button>
+  <button onclick="changeValue(1, 10)">＋10</button>
+  <br>
+  <label>直接入力:
+    <input type="number" id="input1" value="0" onchange="setValue(1)">
+  </label>
 </div>
 
+<!-- メーター2 -->
 <div class="meter" id="meter2">
   <h3>南: <span class="value">0</span></h3>
-  <button onclick="changeValue(2, -1)">−</button>
-  <button onclick="changeValue(2, 1)">＋</button>
+  <button onclick="changeValue(2, -10)">−10</button>
+  <button onclick="changeValue(2, -5)">−5</button>
+  <button onclick="changeValue(2, -1)">−1</button>
+  <button onclick="changeValue(2, 1)">＋1</button>
+  <button onclick="changeValue(2, 5)">＋5</button>
+  <button onclick="changeValue(2, 10)">＋10</button>
+  <br>
+  <label>直接入力:
+    <input type="number" id="input2" value="0" onchange="setValue(2)">
+  </label>
 </div>
 
+<!-- メーター3 -->
 <div class="meter" id="meter3">
   <h3>西: <span class="value">0</span></h3>
-  <button onclick="changeValue(3, -1)">−</button>
-  <button onclick="changeValue(3, 1)">＋</button>
+  <button onclick="changeValue(3, -10)">−10</button>
+  <button onclick="changeValue(3, -5)">−5</button>
+  <button onclick="changeValue(3, -1)">−1</button>
+  <button onclick="changeValue(3, 1)">＋1</button>
+  <button onclick="changeValue(3, 5)">＋5</button>
+  <button onclick="changeValue(3, 10)">＋10</button>
+  <br>
+  <label>直接入力:
+    <input type="number" id="input3" value="0" onchange="setValue(3)">
+  </label>
 </div>
 
+<!-- 合計表示 -->
 <div id="total">合計: 0（OK）</div>
 
 <script>
   const values = [0, 0, 0];
 
+  // 増減ボタンで値を変更
   function changeValue(index, delta) {
     values[index - 1] += delta;
-    document.querySelector(`#meter${index} .value`).textContent = values[index - 1];
+    updateDisplay(index);
     updateTotal();
   }
 
+  // 直接入力時に値を更新
+  function setValue(index) {
+    const input = document.getElementById(`input${index}`);
+    const newValue = parseInt(input.value, 10);
+    values[index - 1] = isNaN(newValue) ? 0 : newValue;
+    updateDisplay(index);
+    updateTotal();
+  }
+
+  // 値の表示を更新
+  function updateDisplay(index) {
+    const valueElem = document.querySelector(`#meter${index} .value`);
+    const inputElem = document.getElementById(`input${index}`);
+    valueElem.textContent = values[index - 1];
+    inputElem.value = values[index - 1];
+  }
+
+  // 合計の更新
   function updateTotal() {
     const total = values.reduce((a, b) => a + b, 0);
     const totalElem = document.getElementById("total");
@@ -71,3 +124,4 @@
 
 </body>
 </html>
+
