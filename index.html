@@ -2,50 +2,26 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>3人麻雀チップカウンタ</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>メーターアプリ（ツモ対応）</title>
 <style>
-  body {
-    font-family: sans-serif;
-    text-align: center;
-    margin-top: 40px;
-  }
-
-  .meter {
-    margin: 25px;
-  }
-
-  button {
-    margin: 4px;
-    padding: 10px 18px;        
-    font-size: 18px;          
-    width: 100px;               
-    font-family: monospace;   
-    border-radius: 8px;       
-    border: 1px solid #ccc;
-    cursor: pointer;
-    transition: all 0.15s ease;
-  }
-
-  button:hover {
-    background-color: #eee;
-  }
-
-  input[type="number"] {
-    width: 100px;
-    text-align: center;
+  body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
+  .meter { margin-bottom: 30px; }
+  .meter button {
+    margin: 3px;
+    padding: 10px 20px;
     font-size: 18px;
-    margin-left: 10px;
-    padding: 5px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
   }
-
-  #total {
-    font-size: 22px;
-    margin-top: 30px;
-  }
-
+  .meter button:hover { background-color: #45a049; }
   #resetBtn {
     margin-top: 50px;
-    padding: 14px 35px;
+    padding: 14px 50px;
     font-size: 20px;
     background-color: #f55;
     color: white;
@@ -54,19 +30,18 @@
     cursor: pointer;
     transition: background-color 0.2s ease;
   }
-
-  #resetBtn:hover {
-    background-color: #d33;
-  }
+  #resetBtn:hover { background-color: #d44; }
+  input[type="number"] { width: 60px; font-size: 16px; }
+  label { margin-left: 10px; font-size: 16px; }
+  #total { font-size: 22px; margin-top: 20px; }
 </style>
 </head>
 <body>
 
-<h2>3人麻雀チップカウンタ</h2>
+<h1>3人麻雀チップカウンタ</h1>
 
-<!-- 東家 -->
 <div class="meter" id="meter1">
-  <h3>東: <span class="value">0</span></h3>
+  <h3>1席: <span class="value">0</span></h3>
   <button onclick="changeValue(1, -10)">−10</button>
   <button onclick="changeValue(1, -5)">−5</button>
   <button onclick="changeValue(1, -1)">−1</button>
@@ -74,14 +49,12 @@
   <button onclick="changeValue(1, 5)">＋5</button>
   <button onclick="changeValue(1, 10)">＋10</button>
   <br>
-  <label>直接入力:
-    <input type="number" id="input1" value="0" onchange="setValue(1)">
-  </label>
+  <label>直接入力: <input type="number" id="input1" value="0" onchange="setValue(1)"></label>
+  <label><input type="checkbox" id="tsumo1"> ツモ</label>
 </div>
 
-<!-- 南家 -->
 <div class="meter" id="meter2">
-  <h3>南: <span class="value">0</span></h3>
+  <h3>2席: <span class="value">0</span></h3>
   <button onclick="changeValue(2, -10)">−10</button>
   <button onclick="changeValue(2, -5)">−5</button>
   <button onclick="changeValue(2, -1)">−1</button>
@@ -89,14 +62,12 @@
   <button onclick="changeValue(2, 5)">＋5</button>
   <button onclick="changeValue(2, 10)">＋10</button>
   <br>
-  <label>直接入力:
-    <input type="number" id="input2" value="0" onchange="setValue(2)">
-  </label>
+  <label>直接入力: <input type="number" id="input2" value="0" onchange="setValue(2)"></label>
+  <label><input type="checkbox" id="tsumo2"> ツモ</label>
 </div>
 
-<!-- 西家 -->
 <div class="meter" id="meter3">
-  <h3>西: <span class="value">0</span></h3>
+  <h3>3席: <span class="value">0</span></h3>
   <button onclick="changeValue(3, -10)">−10</button>
   <button onclick="changeValue(3, -5)">−5</button>
   <button onclick="changeValue(3, -1)">−1</button>
@@ -104,62 +75,76 @@
   <button onclick="changeValue(3, 5)">＋5</button>
   <button onclick="changeValue(3, 10)">＋10</button>
   <br>
-  <label>直接入力:
-    <input type="number" id="input3" value="0" onchange="setValue(3)">
-  </label>
+  <label>直接入力: <input type="number" id="input3" value="0" onchange="setValue(3)"></label>
+  <label><input type="checkbox" id="tsumo3"> ツモ</label>
 </div>
 
-<!-- 合計 -->
 <div id="total">合計: 0（OK）</div>
 
-<!-- リセットボタン -->
 <button id="resetBtn" onclick="resetAll()">リセット</button>
 
 <script>
-  const values = [0, 0, 0];
+  const values = [0,0,0];
 
   function changeValue(index, delta) {
-    values[index - 1] += delta;
-    updateDisplay(index);
-    updateTotal();
+    const tsumo = [
+      document.getElementById('tsumo1').checked,
+      document.getElementById('tsumo2').checked,
+      document.getElementById('tsumo3').checked
+    ];
+
+    let actualDelta = delta;
+
+    if (tsumo[index-1] && delta > 0) {
+      const halfDelta = delta / 2;
+      for (let i=0;i<3;i++) {
+        if (i !== index-1) {
+          values[i] -= halfDelta;
+        }
+      }
+    }
+
+    values[index-1] += actualDelta;
+    updateDisplayAll();
   }
 
   function setValue(index) {
     const input = document.getElementById(`input${index}`);
-    const newValue = parseInt(input.value, 10);
-    values[index - 1] = isNaN(newValue) ? 0 : newValue;
-    updateDisplay(index);
+    const newValue = parseInt(input.value,10);
+    values[index-1] = isNaN(newValue) ? 0 : newValue;
+    updateDisplayAll();
+  }
+
+  function updateDisplayAll() {
+    for (let i=0;i<3;i++) {
+      const valueElem = document.querySelector(`#meter${i+1} .value`);
+      const inputElem = document.getElementById(`input${i+1}`);
+      valueElem.textContent = Math.round(values[i]*10)/10;
+      inputElem.value = Math.round(values[i]*10)/10;
+    }
     updateTotal();
   }
 
-  function updateDisplay(index) {
-    const valueElem = document.querySelector(`#meter${index} .value`);
-    const inputElem = document.getElementById(`input${index}`);
-    valueElem.textContent = values[index - 1];
-    inputElem.value = values[index - 1];
-  }
-
   function updateTotal() {
-    const total = values.reduce((a, b) => a + b, 0);
+    const total = values.reduce((a,b)=>a+b,0);
     const totalElem = document.getElementById("total");
     if (total === 0) {
       totalElem.textContent = `合計: ${total}（OK）`;
       totalElem.style.color = "green";
     } else {
-      totalElem.textContent = `合計: ${total}（NG）`;
+      totalElem.textContent = `合計: ${Math.round(total*10)/10}（NG）`;
       totalElem.style.color = "red";
     }
   }
 
   function resetAll() {
-    const confirmReset = confirm("リセットしますか？");
-    if (!confirmReset) return; 
-    
-    for (let i = 0; i < values.length; i++) {
-      values[i] = 0;
-      updateDisplay(i + 1);
+    if (confirm("リセットしますか？")) {
+      for (let i=0;i<3;i++) {
+        values[i]=0;
+        document.getElementById(`tsumo${i+1}`).checked=false;
+      }
+      updateDisplayAll();
     }
-    updateTotal();
   }
 </script>
 
