@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>3つのメーター合計チェック</title>
+<style>
+  body {
+    font-family: sans-serif;
+    text-align: center;
+    margin-top: 50px;
+  }
+  .meter {
+    margin: 20px;
+  }
+  button {
+    margin: 5px;
+    padding: 5px 10px;
+    font-size: 16px;
+  }
+  #total {
+    font-size: 20px;
+    margin-top: 30px;
+  }
+</style>
+</head>
+<body>
+
+<h2>3つのメーター合計チェック</h2>
+
+<div class="meter" id="meter1">
+  <h3>メーター1: <span class="value">0</span></h3>
+  <button onclick="changeValue(1, -1)">−</button>
+  <button onclick="changeValue(1, 1)">＋</button>
+</div>
+
+<div class="meter" id="meter2">
+  <h3>メーター2: <span class="value">0</span></h3>
+  <button onclick="changeValue(2, -1)">−</button>
+  <button onclick="changeValue(2, 1)">＋</button>
+</div>
+
+<div class="meter" id="meter3">
+  <h3>メーター3: <span class="value">0</span></h3>
+  <button onclick="changeValue(3, -1)">−</button>
+  <button onclick="changeValue(3, 1)">＋</button>
+</div>
+
+<div id="total">合計: 0（OK）</div>
+
+<script>
+  const values = [0, 0, 0];
+
+  function changeValue(index, delta) {
+    values[index - 1] += delta;
+    document.querySelector(`#meter${index} .value`).textContent = values[index - 1];
+    updateTotal();
+  }
+
+  function updateTotal() {
+    const total = values.reduce((a, b) => a + b, 0);
+    const totalElem = document.getElementById("total");
+    if (total === 0) {
+      totalElem.textContent = `合計: ${total}（OK）`;
+      totalElem.style.color = "green";
+    } else {
+      totalElem.textContent = `合計: ${total}（NG）`;
+      totalElem.style.color = "red";
+    }
+  }
+</script>
+
+</body>
+</html>
