@@ -224,7 +224,7 @@
       total: values.reduce((a,b)=>a+b,0)
     };
 
-    history.push(record);
+    history.unshift(record);
     renderHistory();
   }
 
