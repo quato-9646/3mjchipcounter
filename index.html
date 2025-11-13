@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3人麻雀チップカウンタ（保存・履歴機能付き）</title>
+<title>3人麻雀チップカウンタ（履歴削除対応）</title>
 <style>
   body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
   .meter { margin-bottom: 30px; }
@@ -54,12 +54,21 @@
     font-size: 14px;
     border-radius: 5px;
     cursor: pointer;
-    background-color: #28a745;
     color: white;
     border: none;
+    margin: 2px;
   }
-  td button:hover {
+  td button.restore {
+    background-color: #28a745;
+  }
+  td button.restore:hover {
     background-color: #218838;
+  }
+  td button.delete {
+    background-color: #dc3545;
+  }
+  td button.delete:hover {
+    background-color: #c82333;
   }
 </style>
 </head>
@@ -129,7 +138,7 @@
       <th>2席</th>
       <th>3席</th>
       <th>合計</th>
-      <th>復元</th>
+      <th>操作</th>
     </tr>
   </thead>
   <tbody id="historyBody"></tbody>
@@ -224,6 +233,7 @@
       total: values.reduce((a,b)=>a+b,0)
     };
 
+    // 先頭に追加
     history.unshift(record);
     renderHistory();
   }
@@ -239,7 +249,10 @@
         <td>${h.names[1]}: ${h.values[1]}</td>
         <td>${h.names[2]}: ${h.values[2]}</td>
         <td>${Math.round(h.total*10)/10}</td>
-        <td><button onclick="restoreData(${index})">復元</button></td>
+        <td>
+          <button class="restore" onclick="restoreData(${index})">復元</button>
+          <button class="delete" onclick="deleteHistory(${index})">削除</button>
+        </td>
       `;
       tbody.appendChild(row);
     });
@@ -254,6 +267,13 @@
     }
     updateDisplayAll();
     alert(`「${h.label}」の状態を復元しました。`);
+  }
+
+  function deleteHistory(index) {
+    if (confirm(`「${history[index].label}」を削除しますか？`)) {
+      history.splice(index, 1);
+      renderHistory();
+    }
   }
 </script>
 
