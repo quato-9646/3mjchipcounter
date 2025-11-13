@@ -32,7 +32,7 @@
   }
   #resetBtn:hover { background-color: #d44; }
   input[type="number"] { width: 60px; font-size: 16px; }
-  input[type="text"] { font-size: 18px; width: 60px; }
+  input[name="playerName"] { width: 140px; font-size: 18px; }
   label { margin-left: 10px; font-size: 16px; }
   #total { font-size: 22px; margin-top: 20px; }
 </style>
@@ -43,7 +43,7 @@
 
 <div class="meter" id="meter1">
   <h3>
-    <input type="text" id="name1" value="1席">: 
+    <input type="text" id="name1" name="playerName" value="1席">: 
     <span class="value">0</span>
   </h3>
   <button onclick="changeValue(1, -10)">−10</button>
@@ -59,7 +59,7 @@
 
 <div class="meter" id="meter2">
   <h3>
-    <input type="text" id="name2" value="2席">: 
+    <input type="text" id="name2" name="playerName" value="2席">: 
     <span class="value">0</span>
   </h3>
   <button onclick="changeValue(2, -10)">−10</button>
@@ -75,7 +75,7 @@
 
 <div class="meter" id="meter3">
   <h3>
-    <input type="text" id="name3" value="3席">: 
+    <input type="text" id="name3" name="playerName" value="3席">: 
     <span class="value">0</span>
   </h3>
   <button onclick="changeValue(3, -10)">−10</button>
