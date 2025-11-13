@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>3人麻雀チップカウンタ（履歴削除対応）</title>
+<title>3人麻雀チップカウンタ（履歴上追加）</title>
 <style>
   body { font-family: Arial, sans-serif; text-align: center; margin: 20px; }
   .meter { margin-bottom: 30px; }
@@ -77,49 +77,37 @@
 <h1>3人麻雀チップカウンタ</h1>
 
 <div class="meter" id="meter1">
-  <h3>
-    <input type="text" id="name1" name="playerName" value="1席">:
-    <span class="value">0</span>
-  </h3>
+  <h3><input type="text" id="name1" name="playerName" value="1席">: <span class="value">0</span></h3>
   <button onclick="changeValue(1, -10)">−10</button>
   <button onclick="changeValue(1, -5)">−5</button>
   <button onclick="changeValue(1, -1)">−1</button>
   <button onclick="changeValue(1, 1)">＋1</button>
   <button onclick="changeValue(1, 5)">＋5</button>
-  <button onclick="changeValue(1, 10)">＋10</button>
-  <br>
+  <button onclick="changeValue(1, 10)">＋10</button><br>
   <label>直接入力: <input type="number" id="input1" value="0" onchange="setValue(1)"></label>
   <label><input type="checkbox" id="tsumo1"> ツモ</label>
 </div>
 
 <div class="meter" id="meter2">
-  <h3>
-    <input type="text" id="name2" name="playerName" value="2席">:
-    <span class="value">0</span>
-  </h3>
+  <h3><input type="text" id="name2" name="playerName" value="2席">: <span class="value">0</span></h3>
   <button onclick="changeValue(2, -10)">−10</button>
   <button onclick="changeValue(2, -5)">−5</button>
   <button onclick="changeValue(2, -1)">−1</button>
   <button onclick="changeValue(2, 1)">＋1</button>
   <button onclick="changeValue(2, 5)">＋5</button>
-  <button onclick="changeValue(2, 10)">＋10</button>
-  <br>
+  <button onclick="changeValue(2, 10)">＋10</button><br>
   <label>直接入力: <input type="number" id="input2" value="0" onchange="setValue(2)"></label>
   <label><input type="checkbox" id="tsumo2"> ツモ</label>
 </div>
 
 <div class="meter" id="meter3">
-  <h3>
-    <input type="text" id="name3" name="playerName" value="3席">:
-    <span class="value">0</span>
-  </h3>
+  <h3><input type="text" id="name3" name="playerName" value="3席">: <span class="value">0</span></h3>
   <button onclick="changeValue(3, -10)">−10</button>
   <button onclick="changeValue(3, -5)">−5</button>
   <button onclick="changeValue(3, -1)">−1</button>
   <button onclick="changeValue(3, 1)">＋1</button>
   <button onclick="changeValue(3, 5)">＋5</button>
-  <button onclick="changeValue(3, 10)">＋10</button>
-  <br>
+  <button onclick="changeValue(3, 10)">＋10</button><br>
   <label>直接入力: <input type="number" id="input3" value="0" onchange="setValue(3)"></label>
   <label><input type="checkbox" id="tsumo3"> ツモ</label>
 </div>
@@ -145,7 +133,7 @@
 </table>
 
 <script>
-  const values = [0,0,0];
+  const values = [0, 0, 0];
   let history = [];
 
   function changeValue(index, delta) {
@@ -156,16 +144,12 @@
     ];
 
     let actualDelta = delta;
-
     if (tsumo[index-1] && delta > 0) {
       const halfDelta = delta / 2;
-      for (let i=0;i<3;i++) {
-        if (i !== index-1) {
-          values[i] -= halfDelta;
-        }
+      for (let i=0; i<3; i++) {
+        if (i !== index-1) values[i] -= halfDelta;
       }
     }
-
     values[index-1] += actualDelta;
     updateDisplayAll();
   }
@@ -218,7 +202,6 @@
       document.getElementById("name2").value,
       document.getElementById("name3").value
     ];
-
     const tsumoStates = [
       document.getElementById("tsumo1").checked,
       document.getElementById("tsumo2").checked,
@@ -226,14 +209,13 @@
     ];
 
     const record = {
-      label: label,
+      label,
       names: [...names],
       values: [...values],
       tsumo: [...tsumoStates],
       total: values.reduce((a,b)=>a+b,0)
     };
 
-    // 先頭に追加
     history.unshift(record);
     renderHistory();
   }
@@ -254,7 +236,8 @@
           <button class="delete" onclick="deleteHistory(${index})">削除</button>
         </td>
       `;
-      tbody.appendChild(row);
+      // ここが変更点 → 一番上に追加
+      tbody.prepend(row);
     });
   }
 
