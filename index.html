@@ -76,38 +76,53 @@
 
 <h1>3人麻雀チップカウンタ</h1>
 
+<!-- 1席 -->
 <div class="meter" id="meter1">
   <h3><input type="text" id="name1" name="playerName" value="1席">: <span class="value">0</span></h3>
+
+  <button onclick="changeValue(1, -50)">−50</button>
   <button onclick="changeValue(1, -10)">−10</button>
   <button onclick="changeValue(1, -5)">−5</button>
   <button onclick="changeValue(1, -1)">−1</button>
   <button onclick="changeValue(1, 1)">＋1</button>
   <button onclick="changeValue(1, 5)">＋5</button>
-  <button onclick="changeValue(1, 10)">＋10</button><br>
+  <button onclick="changeValue(1, 10)">＋10</button>
+  <button onclick="changeValue(1, 50)">＋50</button><br>
+
   <label>直接入力: <input type="number" id="input1" value="0" onchange="setValue(1)"></label>
   <label><input type="checkbox" id="tsumo1"> ツモ</label>
 </div>
 
+<!-- 2席 -->
 <div class="meter" id="meter2">
   <h3><input type="text" id="name2" name="playerName" value="2席">: <span class="value">0</span></h3>
+
+  <button onclick="changeValue(2, -50)">−50</button>
   <button onclick="changeValue(2, -10)">−10</button>
   <button onclick="changeValue(2, -5)">−5</button>
   <button onclick="changeValue(2, -1)">−1</button>
   <button onclick="changeValue(2, 1)">＋1</button>
   <button onclick="changeValue(2, 5)">＋5</button>
-  <button onclick="changeValue(2, 10)">＋10</button><br>
+  <button onclick="changeValue(2, 10)">＋10</button>
+  <button onclick="changeValue(2, 50)">＋50</button><br>
+
   <label>直接入力: <input type="number" id="input2" value="0" onchange="setValue(2)"></label>
   <label><input type="checkbox" id="tsumo2"> ツモ</label>
 </div>
 
+<!-- 3席 -->
 <div class="meter" id="meter3">
   <h3><input type="text" id="name3" name="playerName" value="3席">: <span class="value">0</span></h3>
+
+  <button onclick="changeValue(3, -50)">−50</button>
   <button onclick="changeValue(3, -10)">−10</button>
   <button onclick="changeValue(3, -5)">−5</button>
   <button onclick="changeValue(3, -1)">−1</button>
   <button onclick="changeValue(3, 1)">＋1</button>
   <button onclick="changeValue(3, 5)">＋5</button>
-  <button onclick="changeValue(3, 10)">＋10</button><br>
+  <button onclick="changeValue(3, 10)">＋10</button>
+  <button onclick="changeValue(3, 50)">＋50</button><br>
+
   <label>直接入力: <input type="number" id="input3" value="0" onchange="setValue(3)"></label>
   <label><input type="checkbox" id="tsumo3"> ツモ</label>
 </div>
@@ -136,6 +151,7 @@
   const values = [0, 0, 0];
   let history = [];
 
+  // ▼ ツモの増減を両対応
   function changeValue(index, delta) {
     const tsumo = [
       document.getElementById('tsumo1').checked,
@@ -143,51 +159,54 @@
       document.getElementById('tsumo3').checked
     ];
 
-    let actualDelta = delta;
-    if (tsumo[index-1] && delta > 0) {
+    // ツモならプラスでもマイナスでも半分を他2人に付け替える
+    if (tsumo[index - 1]) {
       const halfDelta = delta / 2;
-      for (let i=0; i<3; i++) {
-        if (i !== index-1) values[i] -= halfDelta;
+      for (let i = 0; i < 3; i++) {
+        if (i !== index - 1) {
+          values[i] -= halfDelta; // delta が負なら半分プラスになる
+        }
       }
     }
-    values[index-1] += actualDelta;
+
+    values[index - 1] += delta;
     updateDisplayAll();
   }
 
   function setValue(index) {
     const input = document.getElementById(`input${index}`);
     const newValue = parseFloat(input.value);
-    values[index-1] = isNaN(newValue) ? 0 : newValue;
+    values[index - 1] = isNaN(newValue) ? 0 : newValue;
     updateDisplayAll();
   }
 
   function updateDisplayAll() {
-    for (let i=0;i<3;i++) {
-      const valueElem = document.querySelector(`#meter${i+1} .value`);
-      const inputElem = document.getElementById(`input${i+1}`);
-      valueElem.textContent = Math.round(values[i]*10)/10;
-      inputElem.value = Math.round(values[i]*10)/10;
+    for (let i = 0; i < 3; i++) {
+      const valueElem = document.querySelector(`#meter${i + 1} .value`);
+      const inputElem = document.getElementById(`input${i + 1}`);
+      valueElem.textContent = Math.round(values[i] * 10) / 10;
+      inputElem.value = Math.round(values[i] * 10) / 10;
     }
     updateTotal();
   }
 
   function updateTotal() {
-    const total = values.reduce((a,b)=>a+b,0);
+    const total = values.reduce((a, b) => a + b, 0);
     const totalElem = document.getElementById("total");
     if (Math.abs(total) < 1e-9) {
       totalElem.textContent = `合計: ${total}（OK）`;
       totalElem.style.color = "green";
     } else {
-      totalElem.textContent = `合計: ${Math.round(total*10)/10}（NG）`;
+      totalElem.textContent = `合計: ${Math.round(total * 10) / 10}（NG）`;
       totalElem.style.color = "red";
     }
   }
 
   function resetAll() {
     if (confirm("リセットしますか？")) {
-      for (let i=0;i<3;i++) {
-        values[i]=0;
-        document.getElementById(`tsumo${i+1}`).checked=false;
+      for (let i = 0; i < 3; i++) {
+        values[i] = 0;
+        document.getElementById(`tsumo${i + 1}`).checked = false;
       }
       updateDisplayAll();
     }
@@ -213,16 +232,17 @@
       names: [...names],
       values: [...values],
       tsumo: [...tsumoStates],
-      total: values.reduce((a,b)=>a+b,0)
+      total: values.reduce((a, b) => a + b, 0)
     };
 
-    history.unshift(record);
+    history.push(record);
     renderHistory();
   }
 
   function renderHistory() {
     const tbody = document.getElementById("historyBody");
     tbody.innerHTML = "";
+
     history.forEach((h, index) => {
       const row = document.createElement("tr");
       row.innerHTML = `
@@ -230,23 +250,22 @@
         <td>${h.names[0]}: ${h.values[0]}</td>
         <td>${h.names[1]}: ${h.values[1]}</td>
         <td>${h.names[2]}: ${h.values[2]}</td>
-        <td>${Math.round(h.total*10)/10}</td>
+        <td>${Math.round(h.total * 10) / 10}</td>
         <td>
           <button class="restore" onclick="restoreData(${index})">復元</button>
           <button class="delete" onclick="deleteHistory(${index})">削除</button>
         </td>
       `;
-      // ここが変更点 → 一番上に追加
-      tbody.prepend(row);
+      tbody.prepend(row); // 上に追加
     });
   }
 
   function restoreData(index) {
     const h = history[index];
-    for (let i=0;i<3;i++) {
-      document.getElementById(`name${i+1}`).value = h.names[i];
+    for (let i = 0; i < 3; i++) {
+      document.getElementById(`name${i + 1}`).value = h.names[i];
       values[i] = h.values[i];
-      document.getElementById(`tsumo${i+1}`).checked = h.tsumo[i];
+      document.getElementById(`tsumo${i + 1}`).checked = h.tsumo[i];
     }
     updateDisplayAll();
     alert(`「${h.label}」の状態を復元しました。`);
